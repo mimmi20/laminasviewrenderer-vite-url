@@ -16,7 +16,6 @@ use JsonException;
 use Laminas\View\Exception\RuntimeException;
 use Laminas\View\Helper\AbstractHelper;
 use Laminas\View\Renderer\PhpRenderer;
-use Traversable;
 
 use function file_get_contents;
 use function is_file;
@@ -59,15 +58,15 @@ final class ViteUrl extends AbstractHelper
     }
 
     /**
-     * @param array<string, mixed>                            $params
-     * @param array<string, mixed>|Traversable<string, mixed> $options
+     * @param array<string, mixed>    $params
+     * @param iterable<string, mixed> $options
      *
      * @throws RuntimeException
      */
     public function js(
         string | null $name = null,
         array $params = [],
-        array | Traversable $options = [],
+        iterable $options = [],
         bool $reuseMatchedParams = false,
     ): string {
         if ($this->publicDir === null) {
@@ -126,15 +125,15 @@ final class ViteUrl extends AbstractHelper
     }
 
     /**
-     * @param array<string, mixed>                            $params
-     * @param array<string, mixed>|Traversable<string, mixed> $options
+     * @param array<string, mixed>    $params
+     * @param iterable<string, mixed> $options
      *
      * @throws RuntimeException
      */
     public function css(
         string | null $name = null,
         array $params = [],
-        array | Traversable $options = [],
+        iterable $options = [],
         bool $reuseMatchedParams = false,
     ): string {
         if ($this->publicDir === null) {
@@ -181,7 +180,7 @@ final class ViteUrl extends AbstractHelper
 
         $content = file_get_contents($this->publicDir . '/hot');
 
-        if ($content === false) {
+        if (!$content) {
             return null;
         }
 
@@ -210,12 +209,12 @@ final class ViteUrl extends AbstractHelper
 
         $content = file_get_contents($manifestPath);
 
-        if ($content === false) {
+        if (!$content) {
             throw new RuntimeException(
                 sprintf('coule not read and decode Vite manifest at: %s', $manifestPath),
             );
         }
 
-        return (array) json_decode($content, associative: true, flags: JSON_THROW_ON_ERROR);
+        return json_decode($content, associative: true, flags: JSON_THROW_ON_ERROR);
     }
 }

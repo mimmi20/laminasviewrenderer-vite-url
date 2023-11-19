@@ -98,4 +98,4 @@ parameters:
       tooWideThrowType: true
 
   ignoreErrors:
-    - '~Method Mimmi20\\LaminasView\\ViteUrl\\View\\Helper\\ViteUrl::manifestContents\(\) should return array<string, array{file: string, imports: array<string, mixed>, css: array<string, mixed>}> but returns array~'
+    - '~Method Mimmi20\\LaminasView\\ViteUrl\\View\\Helper\\ViteUrl::manifestContents\(\) should return array<string, array{file: string, imports: array<string, mixed>, css: array<string, mixed>}> but returns mixed~'

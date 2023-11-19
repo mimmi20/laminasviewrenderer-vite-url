@@ -112,6 +112,34 @@ final class ViteUrlTest extends TestCase
         self::assertSame($hotDir . '/' . $urlName, $object->js($name));
     }
 
+    /** @throws RuntimeException */
+    public function testJsWithHotRelaoding2(): void
+    {
+        $root    = vfsStream::setup('root');
+        $hotDir  = 'test-hot-dir';
+        $name    = 'test.js';
+        $urlName = 'test2.js';
+
+        $file1 = vfsStream::newFile('hot', 0777);
+        $file1->setContent($hotDir . ' ');
+
+        $root->addChild($file1);
+
+        $buildDir = 'test-build-dir';
+
+        $object = new ViteUrl($root->url(), $buildDir);
+
+        $view = $this->createMock(PhpRenderer::class);
+        $view->expects(self::once())
+            ->method('__call')
+            ->with('url', [$hotDir . '/' . $name, [], [], false])
+            ->willReturn($hotDir . '/' . $urlName);
+
+        $object->setView($view);
+
+        self::assertSame($hotDir . '/' . $urlName, $object->js($name));
+    }
+
     /**
      * @throws Exception
      * @throws RuntimeException
