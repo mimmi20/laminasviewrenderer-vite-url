@@ -198,7 +198,7 @@ final class ViteUrl extends AbstractHelper
     private function manifestContents(): array
     {
         if ($this->buildDir === null) {
-            return [];
+            throw new RuntimeException('A Build Dir is required');
         }
 
         $manifestPath = $this->publicDir . '/' . $this->buildDir . '/manifest.json';
@@ -211,7 +211,7 @@ final class ViteUrl extends AbstractHelper
 
         if (!$content) {
             throw new RuntimeException(
-                sprintf('coule not read and decode Vite manifest at: %s', $manifestPath),
+                sprintf('Could not read and decode Vite manifest at: %s', $manifestPath),
             );
         }
 

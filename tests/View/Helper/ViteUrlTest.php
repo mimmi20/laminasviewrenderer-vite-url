@@ -140,6 +140,35 @@ final class ViteUrlTest extends TestCase
         self::assertSame($hotDir . '/' . $urlName, $object->js($name));
     }
 
+    /** @throws RuntimeException */
+    public function testJsWithHotRelaoding3(): void
+    {
+        $root     = vfsStream::setup('root');
+        $name     = 'test.js';
+        $buildDir = 'test-build-dir';
+
+        $file1 = vfsStream::newFile('hot', 0777);
+        $file1->setContent('');
+
+        $root->addChild($file1);
+
+        $manifestPath = $root->url() . '/' . $buildDir . '/manifest.json';
+
+        $object = new ViteUrl($root->url(), $buildDir);
+
+        $view = $this->createMock(PhpRenderer::class);
+        $view->expects(self::never())
+            ->method('__call');
+
+        $object->setView($view);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Vite manifest not found at: %s', $manifestPath));
+
+        $object->js($name);
+    }
+
     /**
      * @throws Exception
      * @throws RuntimeException
@@ -236,5 +265,66 @@ final class ViteUrlTest extends TestCase
         $object->setView($view);
 
         self::assertSame($buildDir . '/' . $file2, $object->js($name));
+    }
+
+    /**
+     * @throws Exception
+     * @throws RuntimeException
+     */
+    public function testJsWithManifest3(): void
+    {
+        $root     = vfsStream::setup('root');
+        $name     = 'test.js';
+        $buildDir = null;
+
+        $object = new ViteUrl($root->url(), $buildDir);
+
+        $view = $this->createMock(PhpRenderer::class);
+        $view->expects(self::never())
+            ->method('__call');
+
+        $object->setView($view);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('A Build Dir is required');
+
+        $object->js($name);
+    }
+
+    /**
+     * @throws Exception
+     * @throws RuntimeException
+     */
+    public function testJsWithManifest4(): void
+    {
+        $root     = vfsStream::setup('root');
+        $name     = 'test.js';
+        $buildDir = 'test-build-dir';
+
+        $file1 = vfsStream::newFile('manifest.json', 0777);
+        $file1->setContent('');
+
+        $dir = vfsStream::newDirectory($buildDir);
+        $dir->addChild($file1);
+
+        $root->addChild($dir);
+        $manifestPath = $root->url() . '/' . $buildDir . '/manifest.json';
+
+        $object = new ViteUrl($root->url(), $buildDir);
+
+        $view = $this->createMock(PhpRenderer::class);
+        $view->expects(self::never())
+            ->method('__call');
+
+        $object->setView($view);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Could not read and decode Vite manifest at: %s', $manifestPath),
+        );
+
+        $object->js($name);
     }
 }
