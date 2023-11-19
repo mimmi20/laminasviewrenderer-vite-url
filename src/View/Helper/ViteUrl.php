@@ -85,11 +85,7 @@ final class ViteUrl extends AbstractHelper
             return $view->url($server . '/' . $name, $params, $options, $reuseMatchedParams);
         }
 
-        try {
-            $manifest = $this->manifestContents();
-        } catch (JsonException $e) {
-            throw new RuntimeException('Could not load manifest file', 0, $e);
-        }
+        $manifest = $this->manifestContents();
 
         if (!isset($manifest[$name]['file'])) {
             throw new RuntimeException('Unknown Vite entrypoint ' . $name);
@@ -152,11 +148,7 @@ final class ViteUrl extends AbstractHelper
             return $view->url($server . '/' . $name, $params, $options, $reuseMatchedParams);
         }
 
-        try {
-            $manifest = $this->manifestContents();
-        } catch (JsonException $e) {
-            throw new RuntimeException('Could not load manifest file', 0, $e);
-        }
+        $manifest = $this->manifestContents();
 
         if (!isset($manifest[$name]['css'])) {
             throw new RuntimeException('Unknown Vite CSS entrypoint ' . $name);
@@ -193,7 +185,6 @@ final class ViteUrl extends AbstractHelper
      * @return array<string, array{file: string, imports: array<string, mixed>, css: array<string, mixed>}>
      *
      * @throws RuntimeException
-     * @throws JsonException
      */
     private function manifestContents(): array
     {
@@ -215,6 +206,14 @@ final class ViteUrl extends AbstractHelper
             );
         }
 
-        return json_decode($content, associative: true, flags: JSON_THROW_ON_ERROR);
+        try {
+            return json_decode($content, associative: true, flags: JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            throw new RuntimeException(
+                sprintf('Could not decode Vite manifest at: %s', $manifestPath),
+                0,
+                $e,
+            );
+        }
     }
 }
