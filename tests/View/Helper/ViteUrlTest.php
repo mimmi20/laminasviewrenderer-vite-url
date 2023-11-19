@@ -327,4 +327,40 @@ final class ViteUrlTest extends TestCase
 
         $object->js($name);
     }
+
+    /**
+     * @throws Exception
+     * @throws RuntimeException
+     */
+    public function testJsWithManifest5(): void
+    {
+        $root     = vfsStream::setup('root');
+        $name     = 'test.js';
+        $buildDir = 'test-build-dir';
+
+        $file1 = vfsStream::newFile('manifest.json', 0777);
+        $file1->setContent('{test:');
+
+        $dir = vfsStream::newDirectory($buildDir);
+        $dir->addChild($file1);
+
+        $root->addChild($dir);
+        $manifestPath = $root->url() . '/' . $buildDir . '/manifest.json';
+
+        $object = new ViteUrl($root->url(), $buildDir);
+
+        $view = $this->createMock(PhpRenderer::class);
+        $view->expects(self::never())
+            ->method('__call');
+
+        $object->setView($view);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Could not decode Vite manifest at: %s', $manifestPath),
+        );
+
+        $object->js($name);
+    }
 }
