@@ -10,7 +10,10 @@ updates:
     directory: "/"
 
     schedule:
-      interval: "daily"
+      interval: "weekly"
+      day: "saturday"
+      time: "04:00"
+      timezone: "Europe/Berlin"
 
     groups:
       # Specify a name for the group, which will be used in pull request titles
@@ -58,7 +61,10 @@ updates:
     directory: "/"
 
     schedule:
-      interval: "daily"
+      interval: "weekly"
+      day: "saturday"
+      time: "04:00"
+      timezone: "Europe/Berlin"
 
     groups:
       # Specify a name for the group, which will be used in pull request titles

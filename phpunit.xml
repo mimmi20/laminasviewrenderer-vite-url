@@ -39,7 +39,7 @@
     </source>
 
     <testsuites>
-        <testsuite name="Template Test Suite">
+        <testsuite name="laminasviewrenderer-vite-url Test Suite">
             <directory>tests/</directory>
         </testsuite>
     </testsuites>
