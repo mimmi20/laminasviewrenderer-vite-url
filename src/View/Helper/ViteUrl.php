@@ -73,7 +73,7 @@ final class ViteUrl extends AbstractHelper
         $manifest = $this->manifestContents();
 
         if (!isset($manifest[$name]['file'])) {
-            throw new RuntimeException('Unknown Vite entrypoint ' . $name);
+            throw new RuntimeException('Unknown Vite JS entrypoint ' . $name);
         }
 
         return $view->serverUrl('/' . $this->buildDir . '/' . $manifest[$name]['file']);

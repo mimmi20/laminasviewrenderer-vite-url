@@ -223,7 +223,7 @@ final class ViteUrlTest extends TestCase
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage(sprintf('Unknown Vite entrypoint %s', $name));
+        $this->expectExceptionMessage(sprintf('Unknown Vite JS entrypoint %s', $name));
 
         $object->js($name);
     }
@@ -356,5 +356,328 @@ final class ViteUrlTest extends TestCase
         );
 
         $object->js($name);
+    }
+
+    /** @throws RuntimeException */
+    public function testCssWithoutPublicDir(): void
+    {
+        $publicDir = null;
+        $buildDir  = null;
+
+        $object = new ViteUrl($publicDir, $buildDir);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('A Public Dir is required');
+
+        $object->css('');
+    }
+
+    /** @throws RuntimeException */
+    public function testCssWithoutRenderer(): void
+    {
+        $publicDir = 'test-public-dir';
+        $buildDir  = 'test-build-dir';
+
+        $object = new ViteUrl($publicDir, $buildDir);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('A PHP View Renderer is required');
+
+        $object->css('');
+    }
+
+    /** @throws RuntimeException */
+    public function testCssWithWrongRenderer(): void
+    {
+        $publicDir = 'test-public-dir';
+        $buildDir  = 'test-build-dir';
+
+        $object = new ViteUrl($publicDir, $buildDir);
+
+        $view = $this->createMock(RendererInterface::class);
+
+        $object->setView($view);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('A PHP View Renderer is required');
+
+        $object->css('');
+    }
+
+    /** @throws RuntimeException */
+    public function testCssWithHotRelaoding(): void
+    {
+        $root   = vfsStream::setup('root');
+        $hotDir = 'test-hot-dir';
+        $name   = 'test.css';
+
+        $file1 = vfsStream::newFile('hot', 0777);
+        $file1->setContent($hotDir);
+
+        $root->addChild($file1);
+
+        $buildDir = 'test-build-dir';
+
+        $object = new ViteUrl($root->url(), $buildDir);
+
+        $view = $this->createMock(PhpRenderer::class);
+        $view->expects(self::never())
+            ->method('__call');
+
+        $object->setView($view);
+
+        self::assertSame($hotDir . '/' . $name, $object->css($name));
+    }
+
+    /** @throws RuntimeException */
+    public function testCssWithHotRelaoding2(): void
+    {
+        $root   = vfsStream::setup('root');
+        $hotDir = 'test-hot-dir';
+        $name   = 'test.css';
+
+        $file1 = vfsStream::newFile('hot', 0777);
+        $file1->setContent($hotDir . ' ');
+
+        $root->addChild($file1);
+
+        $buildDir = 'test-build-dir';
+
+        $object = new ViteUrl($root->url(), $buildDir);
+
+        $view = $this->createMock(PhpRenderer::class);
+        $view->expects(self::never())
+            ->method('__call');
+
+        $object->setView($view);
+
+        self::assertSame($hotDir . '/' . $name, $object->css($name));
+    }
+
+    /** @throws RuntimeException */
+    public function testCssWithHotRelaoding3(): void
+    {
+        $root     = vfsStream::setup('root');
+        $name     = 'test.css';
+        $buildDir = 'test-build-dir';
+
+        $file1 = vfsStream::newFile('hot', 0777);
+        $file1->setContent('');
+
+        $root->addChild($file1);
+
+        $manifestPath = $root->url() . '/' . $buildDir . '/manifest.json';
+
+        $object = new ViteUrl($root->url(), $buildDir);
+
+        $view = $this->createMock(PhpRenderer::class);
+        $view->expects(self::never())
+            ->method('__call');
+
+        $object->setView($view);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Vite manifest not found at: %s', $manifestPath));
+
+        $object->css($name);
+    }
+
+    /**
+     * @throws Exception
+     * @throws RuntimeException
+     */
+    public function testCssWithoutManifest(): void
+    {
+        $root     = vfsStream::setup('root');
+        $name     = 'test.css';
+        $buildDir = 'test-build-dir';
+
+        $dir = vfsStream::newDirectory($buildDir);
+
+        $root->addChild($dir);
+
+        $publicDir    = 'test-public-dir';
+        $manifestPath = $publicDir . '/' . $buildDir . '/manifest.json';
+
+        $object = new ViteUrl($publicDir, $buildDir);
+
+        $view = $this->createMock(PhpRenderer::class);
+        $view->expects(self::never())
+            ->method('__call');
+
+        $object->setView($view);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Vite manifest not found at: %s', $manifestPath));
+
+        $object->css($name);
+    }
+
+    /**
+     * @throws Exception
+     * @throws RuntimeException
+     */
+    public function testCssWithManifest(): void
+    {
+        $root     = vfsStream::setup('root');
+        $name     = 'test.css';
+        $buildDir = 'test-build-dir';
+
+        $file1 = vfsStream::newFile('manifest.json', 0777);
+        $file1->setContent((string) json_encode([]));
+
+        $dir = vfsStream::newDirectory($buildDir);
+        $dir->addChild($file1);
+
+        $root->addChild($dir);
+
+        $object = new ViteUrl($root->url(), $buildDir);
+
+        $view = $this->createMock(PhpRenderer::class);
+        $view->expects(self::never())
+            ->method('__call');
+
+        $object->setView($view);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Unknown Vite CSS entrypoint %s', $name));
+
+        $object->css($name);
+    }
+
+    /**
+     * @throws Exception
+     * @throws RuntimeException
+     */
+    public function testCssWithManifest2(): void
+    {
+        $root     = vfsStream::setup('root');
+        $name     = 'test.css';
+        $buildDir = 'test-build-dir';
+        $file     = 'test-xyz.css';
+        $file2    = 'test-xyz2.css';
+
+        $file1 = vfsStream::newFile('manifest.json', 0777);
+        $file1->setContent((string) json_encode([$name => ['file' => $file]]));
+
+        $dir = vfsStream::newDirectory($buildDir);
+        $dir->addChild($file1);
+
+        $root->addChild($dir);
+
+        $object = new ViteUrl($root->url(), $buildDir);
+
+        $view = $this->createMock(PhpRenderer::class);
+        $view->expects(self::once())
+            ->method('__call')
+            ->with('serverUrl', ['/' . $buildDir . '/' . $file])
+            ->willReturn('/' . $buildDir . '/' . $file2);
+
+        $object->setView($view);
+
+        self::assertSame('/' . $buildDir . '/' . $file2, $object->css($name));
+    }
+
+    /**
+     * @throws Exception
+     * @throws RuntimeException
+     */
+    public function testCssWithManifest3(): void
+    {
+        $root     = vfsStream::setup('root');
+        $name     = 'test.css';
+        $buildDir = null;
+
+        $object = new ViteUrl($root->url(), $buildDir);
+
+        $view = $this->createMock(PhpRenderer::class);
+        $view->expects(self::never())
+            ->method('__call');
+
+        $object->setView($view);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('A Build Dir is required');
+
+        $object->css($name);
+    }
+
+    /**
+     * @throws Exception
+     * @throws RuntimeException
+     */
+    public function testCssWithManifest4(): void
+    {
+        $root     = vfsStream::setup('root');
+        $name     = 'test.css';
+        $buildDir = 'test-build-dir';
+
+        $file1 = vfsStream::newFile('manifest.json', 0777);
+        $file1->setContent('');
+
+        $dir = vfsStream::newDirectory($buildDir);
+        $dir->addChild($file1);
+
+        $root->addChild($dir);
+        $manifestPath = $root->url() . '/' . $buildDir . '/manifest.json';
+
+        $object = new ViteUrl($root->url(), $buildDir);
+
+        $view = $this->createMock(PhpRenderer::class);
+        $view->expects(self::never())
+            ->method('__call');
+
+        $object->setView($view);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Could not read and decode Vite manifest at: %s', $manifestPath),
+        );
+
+        $object->css($name);
+    }
+
+    /**
+     * @throws Exception
+     * @throws RuntimeException
+     */
+    public function testCssWithManifest5(): void
+    {
+        $root     = vfsStream::setup('root');
+        $name     = 'test.css';
+        $buildDir = 'test-build-dir';
+
+        $file1 = vfsStream::newFile('manifest.json', 0777);
+        $file1->setContent('{test:');
+
+        $dir = vfsStream::newDirectory($buildDir);
+        $dir->addChild($file1);
+
+        $root->addChild($dir);
+        $manifestPath = $root->url() . '/' . $buildDir . '/manifest.json';
+
+        $object = new ViteUrl($root->url(), $buildDir);
+
+        $view = $this->createMock(PhpRenderer::class);
+        $view->expects(self::never())
+            ->method('__call');
+
+        $object->setView($view);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Could not decode Vite manifest at: %s', $manifestPath),
+        );
+
+        $object->css($name);
     }
 }
