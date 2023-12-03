@@ -19,9 +19,7 @@ use Laminas\View\Renderer\PhpRenderer;
 
 use function file_get_contents;
 use function is_file;
-use function is_string;
 use function json_decode;
-use function reset;
 use function rtrim;
 use function sprintf;
 
@@ -35,11 +33,7 @@ final class ViteUrl extends AbstractHelper
         // nothing to do
     }
 
-    /**
-     * Outputs message depending on flag
-     *
-     * @throws void
-     */
+    /** @throws void */
     public function __invoke(): self
     {
         return $this;
@@ -57,18 +51,9 @@ final class ViteUrl extends AbstractHelper
         return $this->buildDir;
     }
 
-    /**
-     * @param array<string, mixed>    $params
-     * @param iterable<string, mixed> $options
-     *
-     * @throws RuntimeException
-     */
-    public function js(
-        string | null $name = null,
-        array $params = [],
-        iterable $options = [],
-        bool $reuseMatchedParams = false,
-    ): string {
+    /** @throws RuntimeException */
+    public function js(string $name): string
+    {
         if ($this->publicDir === null) {
             throw new RuntimeException('A Public Dir is required');
         }
@@ -82,56 +67,21 @@ final class ViteUrl extends AbstractHelper
         $server = $this->hotServer();
 
         if ($server) {
-            return $view->url($server . '/' . $name, $params, $options, $reuseMatchedParams);
+            return $server . '/' . $name;
         }
 
         $manifest = $this->manifestContents();
 
         if (!isset($manifest[$name]['file'])) {
-            throw new RuntimeException('Unknown Vite entrypoint ' . $name);
+            throw new RuntimeException('Unknown Vite JS entrypoint ' . $name);
         }
 
-        return $view->url(
-            $this->buildDir . '/' . $manifest[$name]['file'],
-            $params,
-            $options,
-            $reuseMatchedParams,
-        );
-
-//        $vm = new Manifest($this->publicDir . '/' . $this->buildDir . '/manifest.json', $view->url('/'));
-//
-//        $entrypoint = $vm->getEntrypoint($name);
-//
-//        if (!$entrypoint || $entrypoint === []) {
-//            throw new RuntimeException('Unknown Vite entrypoint ' . $name);
-//        }
-//
-//        ["url" => $url, "hash" => $hash] = $entrypoint;
-//
-//        $view->revisionInlineScript()->appendFile($url, 'module', ['crossorigin' => 'crossorigin', 'integrity' => $hash], addRevision: false);
-//
-//        foreach ($vm->getImports($name, false) as $import) {
-//            ["url" => $url] = $import;
-//            $item = new \stdClass();
-//            $item->rel = 'modulepreload';
-//            $item->href = $url;
-//            $item->crossorigin = ''
-//            echo "<link rel='modulepreload' href='$url' />" . PHP_EOL;
-//        }
+        return $view->serverUrl('/' . $this->buildDir . '/' . $manifest[$name]['file']);
     }
 
-    /**
-     * @param array<string, mixed>    $params
-     * @param iterable<string, mixed> $options
-     *
-     * @throws RuntimeException
-     */
-    public function css(
-        string | null $name = null,
-        array $params = [],
-        iterable $options = [],
-        bool $reuseMatchedParams = false,
-    ): string {
+    /** @throws RuntimeException */
+    public function css(string $name): string
+    {
         if ($this->publicDir === null) {
             throw new RuntimeException('A Public Dir is required');
         }
@@ -145,22 +95,16 @@ final class ViteUrl extends AbstractHelper
         $server = $this->hotServer();
 
         if ($server) {
-            return $view->url($server . '/' . $name, $params, $options, $reuseMatchedParams);
+            return $server . '/' . $name;
         }
 
         $manifest = $this->manifestContents();
 
-        if (!isset($manifest[$name]['css'])) {
+        if (!isset($manifest[$name]['file'])) {
             throw new RuntimeException('Unknown Vite CSS entrypoint ' . $name);
         }
 
-        $firstFile = reset($manifest[$name]['css']);
-
-        if (!is_string($firstFile)) {
-            throw new RuntimeException('Unknown Vite CSS entrypoint ' . $name);
-        }
-
-        return $view->url($this->buildDir . '/' . $firstFile, $params, $options, $reuseMatchedParams);
+        return $view->serverUrl('/' . $this->buildDir . '/' . $manifest[$name]['file']);
     }
 
     /** @throws void */
