@@ -47,7 +47,7 @@ final class ViteUrlTest extends TestCase
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage('A Public Dir is required');
 
-        $object->js();
+        $object->js('');
     }
 
     /** @throws RuntimeException */
@@ -62,7 +62,7 @@ final class ViteUrlTest extends TestCase
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage('A PHP View Renderer is required');
 
-        $object->js();
+        $object->js('');
     }
 
     /** @throws RuntimeException */
@@ -81,16 +81,15 @@ final class ViteUrlTest extends TestCase
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage('A PHP View Renderer is required');
 
-        $object->js();
+        $object->js('');
     }
 
     /** @throws RuntimeException */
     public function testJsWithHotRelaoding(): void
     {
-        $root    = vfsStream::setup('root');
-        $hotDir  = 'test-hot-dir';
-        $name    = 'test.js';
-        $urlName = 'test2.js';
+        $root   = vfsStream::setup('root');
+        $hotDir = 'test-hot-dir';
+        $name   = 'test.js';
 
         $file1 = vfsStream::newFile('hot', 0777);
         $file1->setContent($hotDir);
@@ -102,23 +101,20 @@ final class ViteUrlTest extends TestCase
         $object = new ViteUrl($root->url(), $buildDir);
 
         $view = $this->createMock(PhpRenderer::class);
-        $view->expects(self::once())
-            ->method('__call')
-            ->with('url', [$hotDir . '/' . $name, [], [], false])
-            ->willReturn($hotDir . '/' . $urlName);
+        $view->expects(self::never())
+            ->method('__call');
 
         $object->setView($view);
 
-        self::assertSame($hotDir . '/' . $urlName, $object->js($name));
+        self::assertSame($hotDir . '/' . $name, $object->js($name));
     }
 
     /** @throws RuntimeException */
     public function testJsWithHotRelaoding2(): void
     {
-        $root    = vfsStream::setup('root');
-        $hotDir  = 'test-hot-dir';
-        $name    = 'test.js';
-        $urlName = 'test2.js';
+        $root   = vfsStream::setup('root');
+        $hotDir = 'test-hot-dir';
+        $name   = 'test.js';
 
         $file1 = vfsStream::newFile('hot', 0777);
         $file1->setContent($hotDir . ' ');
@@ -130,14 +126,12 @@ final class ViteUrlTest extends TestCase
         $object = new ViteUrl($root->url(), $buildDir);
 
         $view = $this->createMock(PhpRenderer::class);
-        $view->expects(self::once())
-            ->method('__call')
-            ->with('url', [$hotDir . '/' . $name, [], [], false])
-            ->willReturn($hotDir . '/' . $urlName);
+        $view->expects(self::never())
+            ->method('__call');
 
         $object->setView($view);
 
-        self::assertSame($hotDir . '/' . $urlName, $object->js($name));
+        self::assertSame($hotDir . '/' . $name, $object->js($name));
     }
 
     /** @throws RuntimeException */
@@ -259,12 +253,12 @@ final class ViteUrlTest extends TestCase
         $view = $this->createMock(PhpRenderer::class);
         $view->expects(self::once())
             ->method('__call')
-            ->with('url', [$buildDir . '/' . $file, [], [], false])
-            ->willReturn($buildDir . '/' . $file2);
+            ->with('serverUrl', ['/' . $buildDir . '/' . $file])
+            ->willReturn('/' . $buildDir . '/' . $file2);
 
         $object->setView($view);
 
-        self::assertSame($buildDir . '/' . $file2, $object->js($name));
+        self::assertSame('/' . $buildDir . '/' . $file2, $object->js($name));
     }
 
     /**
