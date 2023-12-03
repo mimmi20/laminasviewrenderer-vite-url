@@ -136,17 +136,24 @@ final class ViteUrl extends AbstractHelper
             throw new RuntimeException('A Build Dir is required');
         }
 
-        $manifestPath = $this->publicDir . '/' . $this->buildDir . '/manifest.json';
+        $manifestPathV4 = $this->publicDir . '/' . $this->buildDir . '/manifest.json';
+        $manifestPathV5 = $this->publicDir . '/' . $this->buildDir . '/.vite/manifest.json';
 
-        if (!is_file($manifestPath)) {
-            throw new RuntimeException(sprintf('Vite manifest not found at: %s', $manifestPath));
+        if (is_file($manifestPathV5)) {
+            $manifestPath = $manifestPathV5;
+        } elseif (is_file($manifestPathV4)) {
+            $manifestPath = $manifestPathV4;
+        } else {
+            throw new RuntimeException(
+                sprintf('Vite manifest not found at %s or at %s', $manifestPathV4, $manifestPathV5),
+            );
         }
 
         $content = file_get_contents($manifestPath);
 
         if (!$content) {
             throw new RuntimeException(
-                sprintf('Could not read and decode Vite manifest at: %s', $manifestPath),
+                sprintf('Could not read Vite manifest at: %s', $manifestPath),
             );
         }
 

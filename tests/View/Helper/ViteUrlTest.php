@@ -146,7 +146,8 @@ final class ViteUrlTest extends TestCase
 
         $root->addChild($file1);
 
-        $manifestPath = $root->url() . '/' . $buildDir . '/manifest.json';
+        $manifestPathV4 = $root->url() . '/' . $buildDir . '/manifest.json';
+        $manifestPathV5 = $root->url() . '/' . $buildDir . '/.vite/manifest.json';
 
         $object = new ViteUrl($root->url(), $buildDir);
 
@@ -158,7 +159,9 @@ final class ViteUrlTest extends TestCase
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage(sprintf('Vite manifest not found at: %s', $manifestPath));
+        $this->expectExceptionMessage(
+            sprintf('Vite manifest not found at %s or at %s', $manifestPathV4, $manifestPathV5),
+        );
 
         $object->js($name);
     }
@@ -177,8 +180,9 @@ final class ViteUrlTest extends TestCase
 
         $root->addChild($dir);
 
-        $publicDir    = 'test-public-dir';
-        $manifestPath = $publicDir . '/' . $buildDir . '/manifest.json';
+        $publicDir      = 'test-public-dir';
+        $manifestPathV4 = $publicDir . '/' . $buildDir . '/manifest.json';
+        $manifestPathV5 = $publicDir . '/' . $buildDir . '/.vite/manifest.json';
 
         $object = new ViteUrl($publicDir, $buildDir);
 
@@ -190,7 +194,9 @@ final class ViteUrlTest extends TestCase
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage(sprintf('Vite manifest not found at: %s', $manifestPath));
+        $this->expectExceptionMessage(
+            sprintf('Vite manifest not found at %s or at %s', $manifestPathV4, $manifestPathV5),
+        );
 
         $object->js($name);
     }
@@ -316,7 +322,7 @@ final class ViteUrlTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage(
-            sprintf('Could not read and decode Vite manifest at: %s', $manifestPath),
+            sprintf('Could not read Vite manifest at: %s', $manifestPath),
         );
 
         $object->js($name);
@@ -356,6 +362,42 @@ final class ViteUrlTest extends TestCase
         );
 
         $object->js($name);
+    }
+
+    /**
+     * @throws Exception
+     * @throws RuntimeException
+     */
+    public function testJsWithManifest6(): void
+    {
+        $root     = vfsStream::setup('root');
+        $name     = 'test.js';
+        $buildDir = 'test-build-dir';
+        $file     = 'test-xyz.js';
+        $file2    = 'test-xyz2.js';
+
+        $file1 = vfsStream::newFile('manifest.json', 0777);
+        $file1->setContent((string) json_encode([$name => ['file' => $file]]));
+
+        $dir2 = vfsStream::newDirectory('.vite');
+        $dir2->addChild($file1);
+
+        $dir1 = vfsStream::newDirectory($buildDir);
+        $dir1->addChild($dir2);
+
+        $root->addChild($dir1);
+
+        $object = new ViteUrl($root->url(), $buildDir);
+
+        $view = $this->createMock(PhpRenderer::class);
+        $view->expects(self::once())
+            ->method('__call')
+            ->with('serverUrl', ['/' . $buildDir . '/' . $file])
+            ->willReturn('/' . $buildDir . '/' . $file2);
+
+        $object->setView($view);
+
+        self::assertSame('/' . $buildDir . '/' . $file2, $object->js($name));
     }
 
     /** @throws RuntimeException */
@@ -469,7 +511,8 @@ final class ViteUrlTest extends TestCase
 
         $root->addChild($file1);
 
-        $manifestPath = $root->url() . '/' . $buildDir . '/manifest.json';
+        $manifestPathV4 = $root->url() . '/' . $buildDir . '/manifest.json';
+        $manifestPathV5 = $root->url() . '/' . $buildDir . '/.vite/manifest.json';
 
         $object = new ViteUrl($root->url(), $buildDir);
 
@@ -481,7 +524,9 @@ final class ViteUrlTest extends TestCase
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage(sprintf('Vite manifest not found at: %s', $manifestPath));
+        $this->expectExceptionMessage(
+            sprintf('Vite manifest not found at %s or at %s', $manifestPathV4, $manifestPathV5),
+        );
 
         $object->css($name);
     }
@@ -500,8 +545,9 @@ final class ViteUrlTest extends TestCase
 
         $root->addChild($dir);
 
-        $publicDir    = 'test-public-dir';
-        $manifestPath = $publicDir . '/' . $buildDir . '/manifest.json';
+        $publicDir      = 'test-public-dir';
+        $manifestPathV4 = $publicDir . '/' . $buildDir . '/manifest.json';
+        $manifestPathV5 = $publicDir . '/' . $buildDir . '/.vite/manifest.json';
 
         $object = new ViteUrl($publicDir, $buildDir);
 
@@ -513,7 +559,9 @@ final class ViteUrlTest extends TestCase
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage(sprintf('Vite manifest not found at: %s', $manifestPath));
+        $this->expectExceptionMessage(
+            sprintf('Vite manifest not found at %s or at %s', $manifestPathV4, $manifestPathV5),
+        );
 
         $object->css($name);
     }
@@ -639,7 +687,7 @@ final class ViteUrlTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage(
-            sprintf('Could not read and decode Vite manifest at: %s', $manifestPath),
+            sprintf('Could not read Vite manifest at: %s', $manifestPath),
         );
 
         $object->css($name);
@@ -679,5 +727,41 @@ final class ViteUrlTest extends TestCase
         );
 
         $object->css($name);
+    }
+
+    /**
+     * @throws Exception
+     * @throws RuntimeException
+     */
+    public function testCssWithManifest6(): void
+    {
+        $root     = vfsStream::setup('root');
+        $name     = 'test.css';
+        $buildDir = 'test-build-dir';
+        $file     = 'test-xyz.css';
+        $file2    = 'test-xyz2.css';
+
+        $file1 = vfsStream::newFile('manifest.json', 0777);
+        $file1->setContent((string) json_encode([$name => ['file' => $file]]));
+
+        $dir2 = vfsStream::newDirectory('.vite');
+        $dir2->addChild($file1);
+
+        $dir1 = vfsStream::newDirectory($buildDir);
+        $dir1->addChild($dir2);
+
+        $root->addChild($dir1);
+
+        $object = new ViteUrl($root->url(), $buildDir);
+
+        $view = $this->createMock(PhpRenderer::class);
+        $view->expects(self::once())
+            ->method('__call')
+            ->with('serverUrl', ['/' . $buildDir . '/' . $file])
+            ->willReturn('/' . $buildDir . '/' . $file2);
+
+        $object->setView($view);
+
+        self::assertSame('/' . $buildDir . '/' . $file2, $object->css($name));
     }
 }
