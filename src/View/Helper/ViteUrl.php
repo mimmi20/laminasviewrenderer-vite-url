@@ -39,19 +39,31 @@ final class ViteUrl extends AbstractHelper
         return $this;
     }
 
-    /** @throws void */
+    /**
+     * @throws void
+     *
+     * @api
+     */
     public function getPublicDir(): string | null
     {
         return $this->publicDir;
     }
 
-    /** @throws void */
+    /**
+     * @throws void
+     *
+     * @api
+     */
     public function getBuildDir(): string | null
     {
         return $this->buildDir;
     }
 
-    /** @throws RuntimeException */
+    /**
+     * @throws RuntimeException
+     *
+     * @api
+     */
     public function js(string $name): string
     {
         if ($this->publicDir === null) {
@@ -79,7 +91,11 @@ final class ViteUrl extends AbstractHelper
         return $view->serverUrl('/' . $this->buildDir . '/' . $manifest[$name]['file']);
     }
 
-    /** @throws RuntimeException */
+    /**
+     * @throws RuntimeException
+     *
+     * @api
+     */
     public function css(string $name): string
     {
         if ($this->publicDir === null) {
