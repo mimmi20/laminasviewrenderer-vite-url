@@ -33,7 +33,7 @@
     "ext-xmlwriter": "*",
     "infection/infection": "^0.27.11 || ^0.28.1",
     "laminas/laminas-modulemanager": "^2.15.0",
-    "laminas/laminas-servicemanager": "^3.22.1",
+    "laminas/laminas-servicemanager": "^4.1.0",
     "mikey179/vfsstream": "^1.6.11",
     "mimmi20/coding-standard": "^5.2.33",
     "nikic/php-parser": "^4.19.1 || ^5.0.2",
