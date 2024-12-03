@@ -14,6 +14,7 @@ declare(strict_types = 1);
 namespace Mimmi20\LaminasView\ViteUrl\View\Helper;
 
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Override;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 
@@ -38,6 +39,7 @@ final class ViteUrlFactory implements FactoryInterface
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
      */
+    #[Override]
     public function __invoke(ContainerInterface $container, $requestedName, array | null $options = null): ViteUrl
     {
         $config = $container->get('config');
