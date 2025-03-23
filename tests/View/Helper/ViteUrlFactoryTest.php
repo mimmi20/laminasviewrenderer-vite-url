@@ -14,7 +14,7 @@ declare(strict_types = 1);
 namespace Mimmi20\LaminasView\ViteUrl\View\Helper;
 
 use AssertionError;
-use Override;
+use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
@@ -22,18 +22,10 @@ use Psr\Container\NotFoundExceptionInterface;
 
 final class ViteUrlFactoryTest extends TestCase
 {
-    private ViteUrlFactory $object;
-
-    /** @throws void */
-    #[Override]
-    protected function setUp(): void
-    {
-        $this->object = new ViteUrlFactory();
-    }
-
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
+     * @throws Exception
      */
     public function testInvokeWithoutRoute(): void
     {
@@ -49,7 +41,7 @@ final class ViteUrlFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('has');
 
-        $result = ($this->object)($container, '');
+        $result = (new ViteUrlFactory())($container, '');
 
         self::assertInstanceOf(ViteUrl::class, $result);
         self::assertNull($result->getPublicDir());
@@ -59,6 +51,7 @@ final class ViteUrlFactoryTest extends TestCase
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
+     * @throws Exception
      */
     public function testInvokeWithRoute(): void
     {
@@ -76,7 +69,7 @@ final class ViteUrlFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('has');
 
-        $result = ($this->object)($container, '');
+        $result = (new ViteUrlFactory())($container, '');
 
         self::assertInstanceOf(ViteUrl::class, $result);
         self::assertSame($publicDir, $result->getPublicDir());
@@ -86,6 +79,7 @@ final class ViteUrlFactoryTest extends TestCase
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
+     * @throws Exception
      */
     public function testInvokeWithoutConfig(): void
     {
@@ -103,12 +97,13 @@ final class ViteUrlFactoryTest extends TestCase
         $this->expectExceptionCode(1);
         $this->expectExceptionMessage('assert(is_array($config))');
 
-        ($this->object)($container, '');
+        (new ViteUrlFactory())($container, '');
     }
 
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
+     * @throws Exception
      */
     public function testInvokeWithWongRouteType(): void
     {
@@ -124,7 +119,7 @@ final class ViteUrlFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('has');
 
-        $result = ($this->object)($container, '');
+        $result = (new ViteUrlFactory())($container, '');
 
         self::assertInstanceOf(ViteUrl::class, $result);
         self::assertNull($result->getPublicDir());
@@ -134,6 +129,7 @@ final class ViteUrlFactoryTest extends TestCase
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
+     * @throws Exception
      */
     public function testInvokeWithWongRouteType2(): void
     {
@@ -153,6 +149,6 @@ final class ViteUrlFactoryTest extends TestCase
         $this->expectExceptionCode(1);
         $this->expectExceptionMessage('assert(is_array($config))');
 
-        ($this->object)($container, '');
+        (new ViteUrlFactory())($container, '');
     }
 }
