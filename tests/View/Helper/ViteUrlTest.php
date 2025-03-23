@@ -17,6 +17,7 @@ use Laminas\View\Exception\RuntimeException;
 use Laminas\View\Renderer\PhpRenderer;
 use Laminas\View\Renderer\RendererInterface;
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Event\NoPreviousThrowableException;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
 
@@ -66,7 +67,12 @@ final class ViteUrlTest extends TestCase
         $object->js('');
     }
 
-    /** @throws RuntimeException */
+    /**
+     * @throws Exception
+     * @throws RuntimeException
+     * @throws NoPreviousThrowableException
+     * @throws \PHPUnit\Framework\MockObject\Exception
+     */
     public function testJsWithWrongRenderer(): void
     {
         $publicDir = 'test-public-dir';
@@ -85,7 +91,12 @@ final class ViteUrlTest extends TestCase
         $object->js('');
     }
 
-    /** @throws RuntimeException */
+    /**
+     * @throws Exception
+     * @throws RuntimeException
+     * @throws NoPreviousThrowableException
+     * @throws \PHPUnit\Framework\MockObject\Exception
+     */
     public function testJsWithHotRelaoding(): void
     {
         $root   = vfsStream::setup('root');
@@ -110,7 +121,12 @@ final class ViteUrlTest extends TestCase
         self::assertSame($hotDir . '/' . $name, $object->js($name));
     }
 
-    /** @throws RuntimeException */
+    /**
+     * @throws Exception
+     * @throws RuntimeException
+     * @throws NoPreviousThrowableException
+     * @throws \PHPUnit\Framework\MockObject\Exception
+     */
     public function testJsWithHotRelaoding2(): void
     {
         $root   = vfsStream::setup('root');
@@ -135,7 +151,12 @@ final class ViteUrlTest extends TestCase
         self::assertSame($hotDir . '/' . $name, $object->js($name));
     }
 
-    /** @throws RuntimeException */
+    /**
+     * @throws Exception
+     * @throws RuntimeException
+     * @throws NoPreviousThrowableException
+     * @throws \PHPUnit\Framework\MockObject\Exception
+     */
     public function testJsWithHotRelaoding3(): void
     {
         $root     = vfsStream::setup('root');
@@ -170,6 +191,8 @@ final class ViteUrlTest extends TestCase
     /**
      * @throws Exception
      * @throws RuntimeException
+     * @throws NoPreviousThrowableException
+     * @throws \PHPUnit\Framework\MockObject\Exception
      */
     public function testJsWithoutManifest(): void
     {
@@ -205,6 +228,8 @@ final class ViteUrlTest extends TestCase
     /**
      * @throws Exception
      * @throws RuntimeException
+     * @throws NoPreviousThrowableException
+     * @throws \PHPUnit\Framework\MockObject\Exception
      */
     public function testJsWithManifest(): void
     {
@@ -238,6 +263,8 @@ final class ViteUrlTest extends TestCase
     /**
      * @throws Exception
      * @throws RuntimeException
+     * @throws NoPreviousThrowableException
+     * @throws \PHPUnit\Framework\MockObject\Exception
      */
     public function testJsWithManifest2(): void
     {
@@ -271,6 +298,8 @@ final class ViteUrlTest extends TestCase
     /**
      * @throws Exception
      * @throws RuntimeException
+     * @throws NoPreviousThrowableException
+     * @throws \PHPUnit\Framework\MockObject\Exception
      */
     public function testJsWithManifest3(): void
     {
@@ -296,6 +325,8 @@ final class ViteUrlTest extends TestCase
     /**
      * @throws Exception
      * @throws RuntimeException
+     * @throws NoPreviousThrowableException
+     * @throws \PHPUnit\Framework\MockObject\Exception
      */
     public function testJsWithManifest4(): void
     {
@@ -332,6 +363,8 @@ final class ViteUrlTest extends TestCase
     /**
      * @throws Exception
      * @throws RuntimeException
+     * @throws NoPreviousThrowableException
+     * @throws \PHPUnit\Framework\MockObject\Exception
      */
     public function testJsWithManifest5(): void
     {
@@ -368,6 +401,8 @@ final class ViteUrlTest extends TestCase
     /**
      * @throws Exception
      * @throws RuntimeException
+     * @throws NoPreviousThrowableException
+     * @throws \PHPUnit\Framework\MockObject\Exception
      */
     public function testJsWithManifest6(): void
     {
@@ -431,7 +466,12 @@ final class ViteUrlTest extends TestCase
         $object->css('');
     }
 
-    /** @throws RuntimeException */
+    /**
+     * @throws Exception
+     * @throws RuntimeException
+     * @throws NoPreviousThrowableException
+     * @throws \PHPUnit\Framework\MockObject\Exception
+     */
     public function testCssWithWrongRenderer(): void
     {
         $publicDir = 'test-public-dir';
@@ -450,7 +490,12 @@ final class ViteUrlTest extends TestCase
         $object->css('');
     }
 
-    /** @throws RuntimeException */
+    /**
+     * @throws Exception
+     * @throws RuntimeException
+     * @throws NoPreviousThrowableException
+     * @throws \PHPUnit\Framework\MockObject\Exception
+     */
     public function testCssWithHotRelaoding(): void
     {
         $root   = vfsStream::setup('root');
@@ -475,7 +520,12 @@ final class ViteUrlTest extends TestCase
         self::assertSame($hotDir . '/' . $name, $object->css($name));
     }
 
-    /** @throws RuntimeException */
+    /**
+     * @throws Exception
+     * @throws RuntimeException
+     * @throws NoPreviousThrowableException
+     * @throws \PHPUnit\Framework\MockObject\Exception
+     */
     public function testCssWithHotRelaoding2(): void
     {
         $root   = vfsStream::setup('root');
@@ -500,7 +550,12 @@ final class ViteUrlTest extends TestCase
         self::assertSame($hotDir . '/' . $name, $object->css($name));
     }
 
-    /** @throws RuntimeException */
+    /**
+     * @throws Exception
+     * @throws RuntimeException
+     * @throws NoPreviousThrowableException
+     * @throws \PHPUnit\Framework\MockObject\Exception
+     */
     public function testCssWithHotRelaoding3(): void
     {
         $root     = vfsStream::setup('root');
@@ -535,6 +590,8 @@ final class ViteUrlTest extends TestCase
     /**
      * @throws Exception
      * @throws RuntimeException
+     * @throws NoPreviousThrowableException
+     * @throws \PHPUnit\Framework\MockObject\Exception
      */
     public function testCssWithoutManifest(): void
     {
@@ -570,6 +627,8 @@ final class ViteUrlTest extends TestCase
     /**
      * @throws Exception
      * @throws RuntimeException
+     * @throws NoPreviousThrowableException
+     * @throws \PHPUnit\Framework\MockObject\Exception
      */
     public function testCssWithManifest(): void
     {
@@ -603,6 +662,8 @@ final class ViteUrlTest extends TestCase
     /**
      * @throws Exception
      * @throws RuntimeException
+     * @throws NoPreviousThrowableException
+     * @throws \PHPUnit\Framework\MockObject\Exception
      */
     public function testCssWithManifest2(): void
     {
@@ -636,6 +697,8 @@ final class ViteUrlTest extends TestCase
     /**
      * @throws Exception
      * @throws RuntimeException
+     * @throws NoPreviousThrowableException
+     * @throws \PHPUnit\Framework\MockObject\Exception
      */
     public function testCssWithManifest3(): void
     {
@@ -661,6 +724,8 @@ final class ViteUrlTest extends TestCase
     /**
      * @throws Exception
      * @throws RuntimeException
+     * @throws NoPreviousThrowableException
+     * @throws \PHPUnit\Framework\MockObject\Exception
      */
     public function testCssWithManifest4(): void
     {
@@ -697,6 +762,8 @@ final class ViteUrlTest extends TestCase
     /**
      * @throws Exception
      * @throws RuntimeException
+     * @throws NoPreviousThrowableException
+     * @throws \PHPUnit\Framework\MockObject\Exception
      */
     public function testCssWithManifest5(): void
     {
@@ -733,6 +800,8 @@ final class ViteUrlTest extends TestCase
     /**
      * @throws Exception
      * @throws RuntimeException
+     * @throws NoPreviousThrowableException
+     * @throws \PHPUnit\Framework\MockObject\Exception
      */
     public function testCssWithManifest6(): void
     {
