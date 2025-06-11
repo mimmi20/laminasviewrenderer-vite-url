@@ -65,7 +65,7 @@ final class ViteUrl extends AbstractHelper
      *
      * @api
      */
-    public function js(string $name): string
+    public function file(string $name): string
     {
         if ($this->publicDir === null) {
             throw new RuntimeException('A Public Dir is required');
@@ -86,39 +86,7 @@ final class ViteUrl extends AbstractHelper
         $manifest = $this->manifestContents();
 
         if (!isset($manifest[$name]['file'])) {
-            throw new RuntimeException('Unknown Vite JS entrypoint ' . $name);
-        }
-
-        return $view->serverUrl('/' . $this->buildDir . '/' . $manifest[$name]['file']);
-    }
-
-    /**
-     * @throws RuntimeException
-     *
-     * @api
-     */
-    public function css(string $name): string
-    {
-        if ($this->publicDir === null) {
-            throw new RuntimeException('A Public Dir is required');
-        }
-
-        $view = $this->getView();
-
-        if (!$view instanceof PhpRenderer) {
-            throw new RuntimeException('A PHP View Renderer is required');
-        }
-
-        $server = $this->hotServer();
-
-        if ($server) {
-            return $server . '/' . $name;
-        }
-
-        $manifest = $this->manifestContents();
-
-        if (!isset($manifest[$name]['file'])) {
-            throw new RuntimeException('Unknown Vite CSS entrypoint ' . $name);
+            throw new RuntimeException('Unknown Vite entrypoint ' . $name);
         }
 
         return $view->serverUrl('/' . $this->buildDir . '/' . $manifest[$name]['file']);
