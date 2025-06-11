@@ -406,14 +406,14 @@ final class ViteUrlTest extends TestCase
      */
     public function testFileWithManifest6(): void
     {
-        $root = vfsStream::setup('root');
-        $name = 'test.js';
+        $root     = vfsStream::setup('root');
+        $name     = 'test.js';
         $buildDir = 'test-build-dir';
-        $file = 'test-xyz.js';
-        $file2 = 'test-xyz2.js';
+        $file     = 'test-xyz.js';
+        $file2    = 'test-xyz2.js';
 
         $file1 = vfsStream::newFile('manifest.json', 0777);
-        $file1->setContent((string)json_encode([$name => ['file' => $file]]));
+        $file1->setContent((string) json_encode([$name => ['file' => $file]]));
 
         $dir2 = vfsStream::newDirectory('.vite');
         $dir2->addChild($file1);
