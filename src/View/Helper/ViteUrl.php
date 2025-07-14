@@ -95,10 +95,6 @@ final class ViteUrl extends AbstractHelper
     /** @throws void */
     private function hotServer(): string | null
     {
-        if (!is_file($this->publicDir . '/hot')) {
-            return null;
-        }
-
         $content = @file_get_contents($this->publicDir . '/hot');
 
         if (!$content) {
