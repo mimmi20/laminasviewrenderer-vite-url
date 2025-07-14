@@ -194,6 +194,43 @@ final class ViteUrlTest extends TestCase
      * @throws NoPreviousThrowableException
      * @throws \PHPUnit\Framework\MockObject\Exception
      */
+    public function testFileWithHotRelaoding4(): void
+    {
+        $root     = vfsStream::setup('root');
+        $name     = 'test.js';
+        $buildDir = 'test-build-dir';
+
+        $file1 = vfsStream::newFile('hot', 0333);
+        $file1->setContent('');
+
+        $root->addChild($file1);
+
+        $manifestPathV4 = $root->url() . '/' . $buildDir . '/manifest.json';
+        $manifestPathV5 = $root->url() . '/' . $buildDir . '/.vite/manifest.json';
+
+        $object = new ViteUrl($root->url(), $buildDir);
+
+        $view = $this->createMock(PhpRenderer::class);
+        $view->expects(self::never())
+            ->method('__call');
+
+        $object->setView($view);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Vite manifest not found at %s or at %s', $manifestPathV4, $manifestPathV5),
+        );
+
+        $object->file($name);
+    }
+
+    /**
+     * @throws Exception
+     * @throws RuntimeException
+     * @throws NoPreviousThrowableException
+     * @throws \PHPUnit\Framework\MockObject\Exception
+     */
     public function testFileWithoutManifest(): void
     {
         $root     = vfsStream::setup('root');
