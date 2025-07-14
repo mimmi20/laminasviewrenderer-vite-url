@@ -99,7 +99,7 @@ final class ViteUrl extends AbstractHelper
             return null;
         }
 
-        $content = file_get_contents($this->publicDir . '/hot');
+        $content = @file_get_contents($this->publicDir . '/hot');
 
         if (!$content) {
             return null;
