@@ -1,6 +1,6 @@
 {
   "name": "mimmi20/laminasviewrenderer-vite-url",
-  "description": "Provides a Viewhelper to render urls for Vite",
+  "description": "Provides a Viewhelper to render urls for resources build with Vite",
   "license": "MIT",
   "type": "library",
   "authors": [
