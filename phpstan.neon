@@ -110,6 +110,8 @@ parameters:
   ignoreErrors:
     - '~will always evaluate to true~'
     - '~Method Mimmi20\\LaminasView\\ViteUrl\\View\\Helper\\ViteUrl::manifestContents\(\) should return array<string, array{file: string, imports: array<string, mixed>, css: array<string, mixed>}> but returns mixed~'
+    - '~of deprecated class~'
+    - '~extends deprecated class~'
 
 rules:
   # code complexity
