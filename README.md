@@ -7,15 +7,17 @@
 ## Code Status
 
 [![codecov](https://codecov.io/gh/mimmi20/laminasviewrenderer-vite-url/branch/master/graph/badge.svg)](https://codecov.io/gh/mimmi20/laminasviewrenderer-vite-url)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/b58f27d75b365533ee80/test_coverage)](https://codeclimate.com/github/mimmi20/laminasviewrenderer-vite-url/test_coverage)
 [![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/mimmi20/laminasviewrenderer-vite-url.svg)](https://isitmaintained.com/project/mimmi20/laminasviewrenderer-vite-url "Average time to resolve an issue")
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/mimmi20/laminasviewrenderer-vite-url.svg)](https://isitmaintained.com/project/mimmi20/laminasviewrenderer-vite-url "Percentage of issues still open")
 [![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fmimmi20%2Flaminasviewrenderer-vite-url%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/mimmi20/laminasviewrenderer-vite-url/master)
-[![Maintainability](https://api.codeclimate.com/v1/badges/b58f27d75b365533ee80/maintainability)](https://codeclimate.com/github/mimmi20/laminasviewrenderer-vite-url/maintainability)
+
+## Introduction
+
+This component provides a view helper to render urls for resources build with Vite
 
 ## Requirements
 
-This library requires PHP 8.1+.
+This library requires PHP 8.3+.
 
 ## Installation
 
@@ -23,6 +25,59 @@ Run
 
 ```shell
 composer require mimmi20/laminasviewrenderer-vite-url
+```
+
+## Prepare Vite
+
+In your Vite config, you need to activate the manifest. 
+
+```js
+  publicDir: 'public',
+  base: '/dist/',
+  build: {
+    // ...
+    outDir: 'public/dist', // relative to the `root` folder
+    manifest: true,
+    // ...
+    
+    rollupOptions: {
+      input: [
+        path.resolve(__dirname, 'public/css/styles.css'),
+        path.resolve(__dirname, 'public/scss/styles.scss'),
+      ]
+    }
+  }
+```
+
+The required manifest file and the resorce files are created when running Vite's build command.
+
+```shell
+npx vite build
+```
+
+## Config
+
+This viewhelper needs a config to know where the public and the build directories are. The directories have to match the directories configured for Vite.
+
+```php
+<?php
+return [
+    // ...
+    'vite-url' => [
+        'public-dir' => 'public', // <-- relative to the project root
+        'build-dir' => 'dist',    // <-- relative to the public directory
+    ],
+    // ...
+];
+```
+
+## Usage
+
+Now you may add a file build with Vite. It is nessesary to use the exact path, you use in the Vite config. Otherwise the file can not be found in the manifest.
+
+```php
+    $this->headLink()->appendStylesheet($this->viteUrl()->file('public/css/styles.css'), 'screen', ['rel' => 'stylesheet']);
+    $this->headLink()->appendStylesheet($this->viteUrl()->file('public/scss/styles.scss'), 'screen', ['rel' => 'stylesheet']);
 ```
 
 ## License
