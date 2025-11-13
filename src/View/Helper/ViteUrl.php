@@ -21,6 +21,7 @@ use Laminas\View\Renderer\PhpRenderer;
 use function file_get_contents;
 use function is_file;
 use function json_decode;
+use function mb_ltrim;
 use function sprintf;
 use function str_replace;
 use function str_starts_with;
@@ -76,8 +77,10 @@ final class ViteUrl extends AbstractHelper
         }
 
         if ($this->viteHost) {
-            if (str_starts_with($name, '/' . $this->publicDir . '/')) {
-                return $this->viteHost . '/' . str_replace('/' . $this->publicDir . '/', '', $name);
+            $name = mb_ltrim($name, '/');
+
+            if (str_starts_with($name, $this->publicDir . '/')) {
+                return $this->viteHost . '/' . str_replace($this->publicDir . '/', '', $name);
             }
 
             return $this->viteHost . '/' . $name;
