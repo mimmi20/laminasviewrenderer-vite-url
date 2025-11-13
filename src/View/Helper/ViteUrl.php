@@ -23,8 +23,6 @@ use function is_file;
 use function json_decode;
 use function mb_ltrim;
 use function sprintf;
-use function str_replace;
-use function str_starts_with;
 
 use const JSON_THROW_ON_ERROR;
 
@@ -77,13 +75,7 @@ final class ViteUrl extends AbstractHelper
         }
 
         if ($this->viteHost) {
-            $name = mb_ltrim($name, '/');
-
-            if (str_starts_with($name, $this->publicDir . '/')) {
-                return $this->viteHost . '/' . str_replace($this->publicDir . '/', '', $name);
-            }
-
-            return $this->viteHost . '/' . $name;
+            return $this->viteHost . '/' . mb_ltrim($name, '/');
         }
 
         $view = $this->getView();
