@@ -125,7 +125,7 @@ final class ViteUrlTest extends TestCase
         $object->setView($view);
 
         self::assertTrue($object->isDev());
-        self::assertSame($hotUrl . '/' . $buildDir . '/' . $file, $object->file($name));
+        self::assertSame($hotUrl . '/' . $name, $object->file($name));
     }
 
     /**

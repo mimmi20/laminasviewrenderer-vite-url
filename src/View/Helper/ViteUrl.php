@@ -22,7 +22,6 @@ use function file_get_contents;
 use function is_file;
 use function json_decode;
 use function sprintf;
-use function str_starts_with;
 
 use const JSON_THROW_ON_ERROR;
 
@@ -74,7 +73,7 @@ final class ViteUrl extends AbstractHelper
             throw new RuntimeException('A Public Dir is required');
         }
 
-        if (str_starts_with($name, '@vite') && $this->viteHost) {
+        if ($this->viteHost) {
             return $this->viteHost . '/' . $name;
         }
 
@@ -88,10 +87,6 @@ final class ViteUrl extends AbstractHelper
 
         if (!isset($manifest[$name]['file'])) {
             throw new RuntimeException('Unknown Vite entrypoint ' . $name);
-        }
-
-        if ($this->viteHost) {
-            return $this->viteHost . '/' . $this->buildDir . '/' . $manifest[$name]['file'];
         }
 
         return $view->serverUrl('/' . $this->buildDir . '/' . $manifest[$name]['file']);
