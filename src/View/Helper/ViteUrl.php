@@ -21,7 +21,7 @@ use Laminas\View\Renderer\PhpRenderer;
 use function file_get_contents;
 use function is_file;
 use function json_decode;
-use function mb_ltrim;
+use function ltrim;
 use function sprintf;
 
 use const JSON_THROW_ON_ERROR;
@@ -75,7 +75,7 @@ final class ViteUrl extends AbstractHelper
         }
 
         if ($this->viteHost) {
-            return $this->viteHost . '/' . mb_ltrim($name, '/');
+            return $this->viteHost . '/' . ltrim($name, '/');
         }
 
         $view = $this->getView();
