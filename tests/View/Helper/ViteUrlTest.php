@@ -246,6 +246,44 @@ final class ViteUrlTest extends TestCase
      * @throws NoPreviousThrowableException
      * @throws \PHPUnit\Framework\MockObject\Exception
      */
+    public function testFileWithHotRelaoding6(): void
+    {
+        $root   = vfsStream::setup('root');
+        $hotUrl = 'https://test.hot.dir';
+        $name   = 'test.js';
+        $name2  = '@vite/client';
+
+        $buildDir = 'test-build-dir';
+        $file     = 'test-xyz.js';
+
+        $file1 = vfsStream::newFile('manifest.json', 0777);
+        $file1->setContent((string) json_encode([$name => ['file' => $file]]));
+
+        $dir = vfsStream::newDirectory($buildDir);
+        $dir->addChild($file1);
+
+        $root->addChild($dir);
+
+        $buildDir = 'test-build-dir';
+
+        $object = new ViteUrl($root->url(), $buildDir, $hotUrl);
+
+        $view = $this->createMock(PhpRenderer::class);
+        $view->expects(self::never())
+            ->method('__call');
+
+        $object->setView($view);
+
+        self::assertTrue($object->isDev());
+        self::assertSame($hotUrl . '/' . $name2, $object->file('/' . $root->url() . '/' . $name2));
+    }
+
+    /**
+     * @throws Exception
+     * @throws RuntimeException
+     * @throws NoPreviousThrowableException
+     * @throws \PHPUnit\Framework\MockObject\Exception
+     */
     public function testFileWithoutManifest(): void
     {
         $root     = vfsStream::setup('root');
