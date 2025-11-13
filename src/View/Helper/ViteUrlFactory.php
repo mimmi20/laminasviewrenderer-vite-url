@@ -59,6 +59,12 @@ final class ViteUrlFactory implements FactoryInterface
             $buildDir = null;
         }
 
-        return new ViteUrl($publicDir, $buildDir);
+        $viteHost = $config['vite-host'] ?? null;
+
+        if (!is_string($viteHost)) {
+            $viteHost = null;
+        }
+
+        return new ViteUrl($publicDir, $buildDir, $viteHost);
     }
 }
