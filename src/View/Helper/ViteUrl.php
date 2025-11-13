@@ -21,16 +21,19 @@ use Laminas\View\Renderer\PhpRenderer;
 use function file_get_contents;
 use function is_file;
 use function json_decode;
-use function rtrim;
 use function sprintf;
+use function str_starts_with;
 
 use const JSON_THROW_ON_ERROR;
 
 final class ViteUrl extends AbstractHelper
 {
     /** @throws void */
-    public function __construct(private readonly string | null $publicDir, private readonly string | null $buildDir)
-    {
+    public function __construct(
+        private readonly string | null $publicDir,
+        private readonly string | null $buildDir,
+        private readonly string | null $viteHost = null,
+    ) {
         // nothing to do
     }
 
@@ -71,16 +74,14 @@ final class ViteUrl extends AbstractHelper
             throw new RuntimeException('A Public Dir is required');
         }
 
+        if (str_starts_with($name, '@vite') && $this->viteHost) {
+            return $this->viteHost . '/' . $name;
+        }
+
         $view = $this->getView();
 
         if (!$view instanceof PhpRenderer) {
             throw new RuntimeException('A PHP View Renderer is required');
-        }
-
-        $server = $this->hotServer();
-
-        if ($server) {
-            return $server . '/' . $name;
         }
 
         $manifest = $this->manifestContents();
@@ -89,19 +90,21 @@ final class ViteUrl extends AbstractHelper
             throw new RuntimeException('Unknown Vite entrypoint ' . $name);
         }
 
+        if ($this->viteHost) {
+            return $this->viteHost . '/' . $this->buildDir . '/' . $manifest[$name]['file'];
+        }
+
         return $view->serverUrl('/' . $this->buildDir . '/' . $manifest[$name]['file']);
     }
 
-    /** @throws void */
-    private function hotServer(): string | null
+    /**
+     * @throws void
+     *
+     * @api
+     */
+    public function isDev(): bool
     {
-        $content = @file_get_contents($this->publicDir . '/hot');
-
-        if (!$content) {
-            return null;
-        }
-
-        return rtrim($content);
+        return !empty($this->viteHost);
     }
 
     /**
