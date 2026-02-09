@@ -62,6 +62,7 @@ jobs:
       skip-eslint: true
       skip-stylelint: true
       skip-prettier: true
+      skip-libpng-install: true
       phpcs-options: ""
 
   tests:
