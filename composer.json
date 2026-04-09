@@ -71,6 +71,7 @@
   "config": {
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true,
+      "ergebnis/composer-normalize": true,
       "infection/extension-installer": true,
       "phpstan/extension-installer": true
     },
@@ -79,6 +80,10 @@
     "sort-packages": true
   },
   "extra": {
+    "composer-normalize": {
+      "indent-size": 2,
+      "indent-style": "space"
+    },
     "laminas": {
       "component": "Mimmi20\\LaminasView\\ViteUrl",
       "config-provider": "Mimmi20\\LaminasView\\ViteUrl\\ConfigProvider"
