@@ -80,7 +80,7 @@ final class ViteUrlTest extends TestCase
 
         $object = new ViteUrl($publicDir, $buildDir);
 
-        $view = $this->createMock(RendererInterface::class);
+        $view = self::createStub(RendererInterface::class);
 
         $object->setView($view);
 
